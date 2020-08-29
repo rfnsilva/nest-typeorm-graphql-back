@@ -9,17 +9,23 @@ import {
 } from 'typeorm';
 import Produto from './Produto.entity';
 
+@ObjectType()
 @Entity({ name: 'categorias' })
 export default class Categoria {
+  
+  @Field()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column()
   nome: string;
 
+  @Field()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @Field()
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 

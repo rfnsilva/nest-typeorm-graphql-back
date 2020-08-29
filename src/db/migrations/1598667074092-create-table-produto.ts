@@ -24,6 +24,12 @@ export class createTableProduto1598667074092 implements MigrationInterface {
           isNullable: false,
         },
         {
+          name: 'img',
+          type: 'varchar',
+          length: '255',
+          isNullable: false,
+        },
+        {
           name: 'valor',
           type: 'integer',
           isNullable: false,

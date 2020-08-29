@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import RepoService from './repositorios/repo.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly repoService: RepoService) {}
 
+  //teste get count categorias
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  async getHello(): Promise<string> {
+    return `qtd categorias: ${await this.repoService.categoriaRepo.count()}`;
   }
 }
