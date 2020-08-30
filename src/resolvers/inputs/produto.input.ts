@@ -1,5 +1,4 @@
 import { Field, InputType } from '@nestjs/graphql';
-import CategoriaInput from './categoria.input';
 
 @InputType()
 export default class ProdutoInput {
@@ -14,4 +13,7 @@ export default class ProdutoInput {
 
   @Field()
   readonly categoriaId: number;
+
+  @Field()
+  readonly fornecedorId: number;
 }

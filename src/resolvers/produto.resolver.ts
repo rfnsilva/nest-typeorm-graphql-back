@@ -13,9 +13,10 @@ import RepoService from '../repositorios/repo.service';
 import Produto from '../db/models/Produto.entity';
 import ProdutoInput from './inputs/produto.input';
 import Categoria from '../db/models/Categoria.entity';
+import Fornecedor from '../db/models/Fornecedor.entity';
 import { context } from 'src/db/loaders';
 
-export const pubSub = new PubSub();
+//export const pubSub = new PubSub();
 
 @Resolver(() => Produto)
 export default class ProdutoResolver {
@@ -43,6 +44,7 @@ export default class ProdutoResolver {
     return this.repoService.produtoRepo.findOne(id);
   }
 
+  //adiciona um produto
   @Mutation(() => Produto)
   public async createProduto(
     @Args('data') input: ProdutoInput,
@@ -51,12 +53,13 @@ export default class ProdutoResolver {
       nome: input.nome,
       descricao: input.descricao,
       valor: input.valor,
-      categoriaId: input.categoriaId
+      categoriaId: input.categoriaId,
+      fornecedorId: input.fornecedorId
     });
 
     const response = await this.repoService.produtoRepo.save(produto);
 
-    pubSub.publish('produtoAdded', { produtoAdded: produto });
+    //pubSub.publish('produtoAdded', { produtoAdded: produto });
 
     return response;
   }
@@ -80,11 +83,11 @@ export default class ProdutoResolver {
   }
 */
 
-  //comunicação em real time
+  /*comunicação em real time
   @Subscription(() => Produto)
   produtoAdded() {
     return pubSub.asyncIterator('produtoAdded');
-  }
+  }*/
   
   @ResolveField(() => Categoria, { name: 'categoria' })
   public async getCategoria(
@@ -92,5 +95,13 @@ export default class ProdutoResolver {
     @Context() { categoriaLoader }: typeof context,
   ): Promise<Categoria> {
     return categoriaLoader.load(parent.categoriaId); // DataLoader
+  }
+  
+  @ResolveField(() => Fornecedor, { name: 'fornecedor' })
+  public async getFornecedor(
+    @Parent() parent: Produto,
+    @Context() { FornecedorLoader }: typeof context,
+  ): Promise<Fornecedor> {
+    return FornecedorLoader.load(parent.fornecedorId); // DataLoader
   }
 }

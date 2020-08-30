@@ -6,15 +6,13 @@ import {
   UpdateDateColumn,
   Column,
   OneToMany,
-  JoinColumn,
-  ManyToOne
 } from 'typeorm';
 import Produto from './Produto.entity';
-import Fornecedor from './Fornecedor.entity';
+import Categoria from './Categoria.entity';
 
 @ObjectType()
-@Entity({ name: 'categoria' })
-export default class Categoria {
+@Entity({ name: 'fornecedor' })
+export default class Fornecedor {
   
   @Field()
   @PrimaryGeneratedColumn()
@@ -25,8 +23,16 @@ export default class Categoria {
   nome: string;
 
   @Field()
-  @Column({ name: 'fornecedor_id' })
-  fornecedorId: number;
+  @Column()
+  cnpj: string;
+
+  @Field()
+  @Column()
+  endereco: string;
+
+  @Field()
+  @Column()
+  telefone: string;
 
   @Field()
   @CreateDateColumn({ name: 'created_at' })
@@ -36,22 +42,17 @@ export default class Categoria {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @Field(() => Fornecedor)
-  fornecedor: Fornecedor;
-
   // Associação
   
+  @OneToMany(
+    () => Categoria,
+    categoria => categoria.fornecedorConnection,
+  )
+  categoriaConnection: Promise<Categoria[]>;
+
   @OneToMany(
     () => Produto,
     produto => produto.categoriaConnection,
   )
   produtoConnection: Promise<Produto[]>;
-  
-  @ManyToOne(
-    () => Fornecedor,
-    fornecedor => fornecedor.categoriaConnection,
-    { primary: true },
-  )
-  @JoinColumn({ name: 'fornecedor_id' })
-  fornecedorConnection: Promise<Fornecedor>;
 }

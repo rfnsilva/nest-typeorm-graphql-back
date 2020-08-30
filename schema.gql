@@ -2,9 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Categoria {
+type Fornecedor {
   id: Float!
   nome: String!
+  cnpj: String!
+  endereco: String!
+  telefone: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -14,15 +17,62 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Categoria {
+  id: Float!
+  nome: String!
+  fornecedorId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  fornecedor: Fornecedor!
+}
+
 type Produto {
   id: Float!
   nome: String!
   descricao: String!
   valor: Float!
   categoriaId: Float!
+  fornecedorId: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
   categoria: Categoria!
+  fornecedor: Fornecedor!
+}
+
+type Venda {
+  id: Float!
+  nome_produto: String!
+  valor_produto: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Cliente {
+  id: Float!
+  nome: String!
+  email: String!
+  senha: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  produtos: [Produto!]!
+}
+
+type User {
+  id: Float!
+  nome: String!
+  email: String!
+  senha: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Conta {
+  id: Float!
+  valor: Float!
+  fornecedorId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  fornecedor: Fornecedor!
 }
 
 type Query {
@@ -31,15 +81,32 @@ type Query {
   getProdutos: [Produto!]!
   getProdutosCategoria(categoriaId: Float!): [Produto!]!
   getProduto(id: Float!): Produto
+  getVendas: [Venda!]!
+  getVenda(id: Float!): Venda
+  getContas: [Conta!]!
+  getContaFornecedor(fornecedorId: Float!): [Conta!]!
+  getConta(id: Float!): Conta
+  getFornecedores: [Fornecedor!]!
+  getFornecedor(id: Float!): Fornecedor
+  getUsers: [User!]!
+  getUser(id: Float!): User
+  getClientes: [Cliente!]!
+  getCliente(id: Float!): Cliente
 }
 
 type Mutation {
   createCategoria(data: CategoriaInput!): Categoria!
   createProduto(data: ProdutoInput!): Produto!
+  createVenda(data: VendaInput!): Venda!
+  createConta(data: ContaInput!): Conta!
+  createFornecedor(data: FornecedorInput!): Fornecedor!
+  createUser(data: UserInput!): User!
+  createCliente(data: ClienteInput!): Cliente!
 }
 
 input CategoriaInput {
   nome: String!
+  fornecedorId: Float!
 }
 
 input ProdutoInput {
@@ -47,8 +114,34 @@ input ProdutoInput {
   descricao: String!
   valor: Float!
   categoriaId: Float!
+  fornecedorId: Float!
 }
 
-type Subscription {
-  produtoAdded: Produto!
+input VendaInput {
+  nome_produto: String!
+  valor_produto: Float!
+}
+
+input ContaInput {
+  valor: Float!
+  fornecedorId: Float!
+}
+
+input FornecedorInput {
+  nome: String!
+  cnpj: String!
+  endereco: String!
+  telefone: String!
+}
+
+input UserInput {
+  nome: String!
+  email: String!
+  senha: String!
+}
+
+input ClienteInput {
+  nome: String!
+  email: String!
+  senha: String!
 }

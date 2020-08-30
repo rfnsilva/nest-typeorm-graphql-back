@@ -5,27 +5,24 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
-  OneToMany,
   JoinColumn,
-  ManyToOne
+  OneToOne
 } from 'typeorm';
-import Produto from './Produto.entity';
 import Fornecedor from './Fornecedor.entity';
 
 @ObjectType()
-@Entity({ name: 'categoria' })
-export default class Categoria {
-  
+@Entity({ name: 'conta' })
+export default class Conta {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
 
   @Field()
   @Column()
-  nome: string;
+  valor: number;
 
   @Field()
-  @Column({ name: 'fornecedor_id' })
+  @Column({ name: 'fornecedor_id', unique: true })
   fornecedorId: number;
 
   @Field()
@@ -40,18 +37,9 @@ export default class Categoria {
   fornecedor: Fornecedor;
 
   // Associação
-  
-  @OneToMany(
-    () => Produto,
-    produto => produto.categoriaConnection,
-  )
-  produtoConnection: Promise<Produto[]>;
-  
-  @ManyToOne(
-    () => Fornecedor,
-    fornecedor => fornecedor.categoriaConnection,
-    { primary: true },
-  )
+
+  @OneToOne(() => Fornecedor, { primary: true })
   @JoinColumn({ name: 'fornecedor_id' })
   fornecedorConnection: Promise<Fornecedor>;
+
 }

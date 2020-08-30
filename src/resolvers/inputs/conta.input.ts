@@ -1,10 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export default class CategoriaInput {
+export default class ContaInput {
   @Field()
-  readonly nome: string;
+  readonly valor: number;
 
   @Field()
   readonly fornecedorId: number;
+
 }

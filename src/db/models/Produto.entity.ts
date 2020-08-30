@@ -9,9 +9,10 @@ import {
   ManyToOne,
 } from 'typeorm';
 import Categoria from './Categoria.entity';
+import Fornecedor from './Fornecedor.entity';
 
 @ObjectType()
-@Entity({ name: 'produtos' })
+@Entity({ name: 'produto' })
 export default class Produto {
   @Field()
   @PrimaryGeneratedColumn()
@@ -34,6 +35,10 @@ export default class Produto {
   categoriaId: number;
 
   @Field()
+  @Column({ name: 'fornecedor_id' })
+  fornecedorId: number;
+
+  @Field()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -44,7 +49,11 @@ export default class Produto {
   @Field(() => Categoria)
   categoria: Categoria;
 
+  @Field(() => Fornecedor)
+  fornecedor: Fornecedor;
+
   // Associação
+
   @ManyToOne(
     () => Categoria,
     categoria => categoria.produtoConnection,
@@ -52,4 +61,12 @@ export default class Produto {
   )
   @JoinColumn({ name: 'categoria_id' })
   categoriaConnection: Promise<Categoria>;
+
+  @ManyToOne(
+    () => Fornecedor,
+    fornecedor => fornecedor.produtoConnection,
+    { primary: true },
+  )
+  @JoinColumn({ name: 'fornecedor_id' })
+  fornecedorConnection: Promise<Fornecedor>;
 }
