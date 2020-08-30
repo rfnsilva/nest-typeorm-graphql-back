@@ -1,0 +1,54 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Categoria {
+  id: Float!
+  nome: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Produto {
+  id: Float!
+  nome: String!
+  descricao: String!
+  valor: Float!
+  categoriaId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  categoria: Categoria!
+}
+
+type Query {
+  getCategorias: [Categoria!]!
+  getCategoria(id: Float!): Categoria
+  getProdutos: [Produto!]!
+  getProdutosCategoria(categoriaId: Float!): [Produto!]!
+  getProduto(id: Float!): Produto
+}
+
+type Mutation {
+  createCategoria(data: CategoriaInput!): Categoria!
+  createProduto(data: ProdutoInput!): Produto!
+}
+
+input CategoriaInput {
+  nome: String!
+}
+
+input ProdutoInput {
+  nome: String!
+  descricao: String!
+  valor: Float!
+  categoriaId: Float!
+}
+
+type Subscription {
+  produtoAdded: Produto!
+}

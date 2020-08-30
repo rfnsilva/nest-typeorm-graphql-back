@@ -7,6 +7,8 @@ import Categoria from '../db/models/Categoria.entity';
 @Injectable()
 class RepoService {
   public constructor(
+
+    //serviço que injeta os repositorios no codigo
     @InjectRepository(Produto) public readonly produtoRepo: Repository<Produto>,
     @InjectRepository(Categoria) public readonly categoriaRepo: Repository<Categoria>,
   ){}

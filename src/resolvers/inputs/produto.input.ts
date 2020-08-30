@@ -15,15 +15,3 @@ export default class ProdutoInput {
   @Field()
   readonly categoriaId: number;
 }
-
-
-/*
-  @InputType()
-  export class DeleteProdutoInput {
-    @Field()
-    readonly id: number;
-
-    @Field()
-    readonly userId: number;
-  }
-*/

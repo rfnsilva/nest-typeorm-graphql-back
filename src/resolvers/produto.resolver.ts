@@ -9,53 +9,58 @@ import {
   Context,
 } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
-import RepoService from '../repo.service';
-import Message from '../db/models/message.entity';
-import MessageInput, { DeleteMessageInput } from './input/message.input';
-import User from '../db/models/user.entity';
+import RepoService from '../repositorios/repo.service';
+import Produto from '../db/models/Produto.entity';
+import ProdutoInput from './inputs/produto.input';
+import Categoria from '../db/models/Categoria.entity';
 import { context } from 'src/db/loaders';
 
 export const pubSub = new PubSub();
 
-@Resolver(() => Message)
-export default class MessageResolver {
+@Resolver(() => Produto)
+export default class ProdutoResolver {
   constructor(private readonly repoService: RepoService) {}
 
-  @Query(() => [Message])
-  public async getMessages(): Promise<Message[]> {
-    return this.repoService.messageRepo.find();
+  //retorna todos os produtos
+  @Query(() => [Produto])
+  public async getProdutos(): Promise<Produto[]> {
+    return this.repoService.produtoRepo.find();
   }
 
-  @Query(() => [Message])
-  public async getMessagesFromUser(
-    @Args('userId') userId: number,
-  ): Promise<Message[]> {
-    return this.repoService.messageRepo.find({
-      where: { userId },
+  //retorna todos os produtos de acordo com a categoria
+  @Query(() => [Produto])
+  public async getProdutosCategoria(
+    @Args('categoriaId') categoriaId: number,
+  ): Promise<Produto[]> {
+    return this.repoService.produtoRepo.find({
+      where: { categoriaId },
     });
   }
 
-  @Query(() => Message, { nullable: true })
-  public async getMessage(@Args('id') id: number): Promise<Message> {
-    return this.repoService.messageRepo.findOne(id);
+  //retorna um produto
+  @Query(() => Produto, { nullable: true })
+  public async getProduto(@Args('id') id: number): Promise<Produto> {
+    return this.repoService.produtoRepo.findOne(id);
   }
 
-  @Mutation(() => Message)
-  public async createMessage(
-    @Args('data') input: MessageInput,
-  ): Promise<Message> {
-    const message = this.repoService.messageRepo.create({
-      userId: input.userId,
-      content: input.content,
+  @Mutation(() => Produto)
+  public async createProduto(
+    @Args('data') input: ProdutoInput,
+  ): Promise<Produto> {
+    const produto = this.repoService.produtoRepo.create({
+      nome: input.nome,
+      descricao: input.descricao,
+      valor: input.valor,
+      categoriaId: input.categoriaId
     });
 
-    const response = await this.repoService.messageRepo.save(message);
+    const response = await this.repoService.produtoRepo.save(produto);
 
-    pubSub.publish('messageAdded', { messageAdded: message });
+    pubSub.publish('produtoAdded', { produtoAdded: produto });
 
     return response;
   }
-
+/*
   @Mutation(() => Message)
   public async deleteMessage(
     @Args('data') input: DeleteMessageInput,
@@ -73,18 +78,19 @@ export default class MessageResolver {
 
     return copy;
   }
+*/
 
-  @Subscription(() => Message)
-  messageAdded() {
-    return pubSub.asyncIterator('messageAdded');
+  //comunicação em real time
+  @Subscription(() => Produto)
+  produtoAdded() {
+    return pubSub.asyncIterator('produtoAdded');
   }
-
-  @ResolveField(() => User, { name: 'user' })
-  public async getUser(
-    @Parent() parent: Message,
-    @Context() { UserLoader }: typeof context,
-  ): Promise<User> {
-    return UserLoader.load(parent.userId); // With DataLoader
-    // return this.repoService.userRepo.findOne(parent.userId); // Without DataLoader
+  
+  @ResolveField(() => Categoria, { name: 'categoria' })
+  public async getCategoria(
+    @Parent() parent: Produto,
+    @Context() { categoriaLoader }: typeof context,
+  ): Promise<Categoria> {
+    return categoriaLoader.load(parent.categoriaId); // DataLoader
   }
 }

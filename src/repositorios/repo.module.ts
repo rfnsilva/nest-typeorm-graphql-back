@@ -18,4 +18,6 @@ import Categoria from '../db/models/Categoria.entity';
 class RepoModule {
 
 }
+
+//modulo que exporta os repositorios
 export default RepoModule;
