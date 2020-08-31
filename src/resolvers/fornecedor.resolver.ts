@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import RepoService from '../repositorios/repo.service';
 import Fornecedor from '../db/models/Fornecedor.entity';
-import FornecedorInput from './inputs/fornecedor.input';
+import FornecedorInput, { DeleteInput } from './inputs/fornecedor.input';
 
 @Resolver(() => Fornecedor)
 export default class FornecedorResolver {
@@ -32,5 +32,17 @@ export default class FornecedorResolver {
     })
 
     return await this.repoService.fornecedorRepo.save(fornecedor);
+  }
+
+  //deleta um fornecedor pelo id
+  @Mutation(() => [Fornecedor])
+  public async deleteFornecedor(
+    @Args('data') input: DeleteInput,
+  ): Promise<Fornecedor[]> {
+    const fornecedor = await this.repoService.fornecedorRepo.findOne(input.id);
+
+    await this.repoService.fornecedorRepo.remove(fornecedor);
+
+    return this.repoService.fornecedorRepo.find();;
   }
 }

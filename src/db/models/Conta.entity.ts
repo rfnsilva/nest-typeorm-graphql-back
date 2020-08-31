@@ -38,7 +38,7 @@ export default class Conta {
 
   // Associação
 
-  @OneToOne(() => Fornecedor, { primary: true })
+  @OneToOne(() => Fornecedor, { primary: true, onDelete: "CASCADE" })
   @JoinColumn({ name: 'fornecedor_id' })
   fornecedorConnection: Promise<Fornecedor>;
 

@@ -15,3 +15,10 @@ export default class FornecedorInput {
   readonly telefone: string;
 
 }
+
+@InputType()
+export class DeleteInput {
+  @Field()
+  readonly id: number;
+
+}
