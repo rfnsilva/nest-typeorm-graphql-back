@@ -78,6 +78,7 @@ type Conta {
 type Query {
   getCategorias: [Categoria!]!
   getCategoria(id: Float!): Categoria
+  getCategoriasFornecedor(fornecedorId: Float!): [Categoria!]!
   getProdutos: [Produto!]!
   getProdutosCategoria(categoriaId: Float!): [Produto!]!
   getProduto(id: Float!): Produto
@@ -95,20 +96,34 @@ type Query {
 }
 
 type Mutation {
-  createCategoria(data: CategoriaInput!): Categoria!
+  createCategoria(data: CategoriaInput!): [Categoria!]!
+  updateCategoria(data: CategoriaUpdateInput!): [Categoria!]!
+  deleteCategoria(data: CategoriaDeleteInput!): [Categoria!]!
   createProduto(data: ProdutoInput!): Produto!
   createVenda(data: VendaInput!): Venda!
-  createConta(data: ContaInput!): Conta!
+  createConta(data: ContaInput!): [Conta!]!
+  updateConta(data: ContaUpdateInput!): [Conta!]!
+  deleteConta(data: ContaDeleteInput!): [Conta!]!
   createFornecedor(data: FornecedorInput!): [Fornecedor!]!
-  updateFornecedor(data: UpdateInput!): [Fornecedor!]!
-  deleteFornecedor(data: DeleteInput!): [Fornecedor!]!
+  updateFornecedor(data: FornecedorUpdateInput!): [Fornecedor!]!
+  deleteFornecedor(data: FornecedorDeleteInput!): [Fornecedor!]!
   createUser(data: UserInput!): User!
-  createCliente(data: ClienteInput!): Cliente!
+  createCliente(data: ClienteInput!): [Cliente!]!
 }
 
 input CategoriaInput {
   nome: String!
   fornecedorId: Float!
+}
+
+input CategoriaUpdateInput {
+  id: Float!
+  nome: String!
+  fornecedorId: Float!
+}
+
+input CategoriaDeleteInput {
+  id: Float!
 }
 
 input ProdutoInput {
@@ -129,6 +144,16 @@ input ContaInput {
   fornecedorId: Float!
 }
 
+input ContaUpdateInput {
+  id: Float!
+  valor: Float!
+  fornecedorId: Float!
+}
+
+input ContaDeleteInput {
+  id: Float!
+}
+
 input FornecedorInput {
   nome: String!
   cnpj: String!
@@ -136,7 +161,7 @@ input FornecedorInput {
   telefone: String!
 }
 
-input UpdateInput {
+input FornecedorUpdateInput {
   id: Float!
   nome: String!
   cnpj: String!
@@ -144,7 +169,7 @@ input UpdateInput {
   telefone: String!
 }
 
-input DeleteInput {
+input FornecedorDeleteInput {
   id: Float!
 }
 
@@ -158,4 +183,8 @@ input ClienteInput {
   nome: String!
   email: String!
   senha: String!
+}
+
+type Subscription {
+  fornecedorAdded: Fornecedor!
 }

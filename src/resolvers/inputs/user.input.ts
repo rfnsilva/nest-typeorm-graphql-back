@@ -12,3 +12,11 @@ export default class UserInput {
   readonly senha: string;
 
 }
+
+@InputType()
+export class UserDeleteInput {
+  @Field()
+  readonly id: number;
+
+}
+

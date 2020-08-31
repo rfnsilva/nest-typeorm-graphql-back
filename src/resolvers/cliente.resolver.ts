@@ -20,16 +20,19 @@ export default class ClienteResolver {
   }
 
   //adiciona um cliente
-  @Mutation(() => Cliente)
+  @Mutation(() => [Cliente])
   public async createCliente(
     @Args('data') input: ClienteInput,
-  ): Promise<Cliente> {
+  ): Promise<Cliente[]> {
     let cliente = this.repoService.clienteRepo.create({
       nome: input.nome,
       email: input.email,
       senha: input.senha,
     })
 
-    return await this.repoService.clienteRepo.save(cliente);
+    await this.repoService.clienteRepo.save(cliente);
+
+    return this.repoService.clienteRepo.find({order: {id: 'ASC'}});
+
   }
 }

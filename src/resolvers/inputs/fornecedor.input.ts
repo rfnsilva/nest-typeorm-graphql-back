@@ -17,14 +17,14 @@ export default class FornecedorInput {
 }
 
 @InputType()
-export class DeleteInput {
+export class FornecedorDeleteInput {
   @Field()
   readonly id: number;
 
 }
 
 @InputType()
-export class UpdateInput {
+export class FornecedorUpdateInput {
   @Field()
   readonly id: number;
   

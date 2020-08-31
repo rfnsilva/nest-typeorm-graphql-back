@@ -1,7 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import RepoService from '../repositorios/repo.service';
 import Fornecedor from '../db/models/Fornecedor.entity';
-import FornecedorInput, { DeleteInput, UpdateInput } from './inputs/fornecedor.input';
+import FornecedorInput, { FornecedorDeleteInput, FornecedorUpdateInput } from './inputs/fornecedor.input';
+import { PubSub } from 'graphql-subscriptions';
+
+//REAL TIME
+export const pubSub = new PubSub();
 
 @Resolver(() => Fornecedor)
 export default class FornecedorResolver {
@@ -33,6 +37,8 @@ export default class FornecedorResolver {
 
     await this.repoService.fornecedorRepo.save(fornecedor);
 
+    pubSub.publish('fornecedorAdded', { fornecedorAdded: fornecedor });
+
     return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
 
   }
@@ -40,7 +46,7 @@ export default class FornecedorResolver {
   //atualiza um fornecedor
   @Mutation(() => [Fornecedor])
   public async updateFornecedor(
-    @Args('data') input: UpdateInput,
+    @Args('data') input: FornecedorUpdateInput,
   ): Promise<Fornecedor[]> {
     await this.repoService.fornecedorRepo.update(input.id, {...input});
 
@@ -51,7 +57,7 @@ export default class FornecedorResolver {
   //deleta um fornecedor pelo id
   @Mutation(() => [Fornecedor])
   public async deleteFornecedor(
-    @Args('data') input: DeleteInput,
+    @Args('data') input: FornecedorDeleteInput,
   ): Promise<Fornecedor[]> {
     const fornecedor = await this.repoService.fornecedorRepo.findOne(input.id);
     
@@ -59,5 +65,11 @@ export default class FornecedorResolver {
 
     return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
 
+  }
+
+  //SUBSCRIPTIONS
+  @Subscription(() => Fornecedor)
+  fornecedorAdded() {
+    return pubSub.asyncIterator('fornecedorAdded');
   }
 }

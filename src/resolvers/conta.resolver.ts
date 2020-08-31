@@ -10,10 +10,8 @@ import {
 } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import RepoService from '../repositorios/repo.service';
-import ContaInput from './inputs/conta.input';
+import ContaInput, {ContaDeleteInput, ContaUpdateInput} from './inputs/conta.input';
 import Conta from '../db/models/Conta.entity';
-import Fornecedor from '../db/models/Fornecedor.entity';
-import { context } from 'src/db/loaders';
 
 //export const pubSub = new PubSub();
 
@@ -44,25 +42,42 @@ export default class ContaResolver {
   }
 
   //adiciona uma conta
-  @Mutation(() => Conta)
+  @Mutation(() => [Conta])
   public async createConta(
     @Args('data') input: ContaInput,
-  ): Promise<Conta> {
-    const conta = this.repoService.contaRepo.create({
+  ): Promise<Conta[]> {
+    let conta = this.repoService.contaRepo.create({
       valor: input.valor,
       fornecedorId: input.fornecedorId
-    });
+    })
 
-    const response = await this.repoService.contaRepo.save(conta);
+    await this.repoService.contaRepo.save(conta);
 
-    return response;
+    return this.repoService.contaRepo.find({order: {id: 'ASC'}});
+
   }
-  
-  @ResolveField(() => Fornecedor, { name: 'fornecedor' })
-  public async getFornecedor(
-    @Parent() parent: Conta,
-    @Context() { FornecedorLoader }: typeof context,
-  ): Promise<Fornecedor> {
-    return FornecedorLoader.load(parent.fornecedorId); // DataLoader
+
+  //atualiza uma conta
+  @Mutation(() => [Conta])
+  public async updateConta(
+    @Args('data') input: ContaUpdateInput,
+  ): Promise<Conta[]> {
+    await this.repoService.contaRepo.update(input.id, {...input});
+
+    return this.repoService.contaRepo.find({order: {id: 'ASC'}});
+
+  }
+
+  //deleta uma conta pelo id
+  @Mutation(() => [Conta])
+  public async deleteConta(
+    @Args('data') input: ContaDeleteInput,
+  ): Promise<Conta[]> {
+    const conta = await this.repoService.contaRepo.findOne(input.id);
+    
+    await this.repoService.contaRepo.remove(conta);
+
+    return this.repoService.contaRepo.find({order: {id: 'ASC'}});
+
   }
 }
