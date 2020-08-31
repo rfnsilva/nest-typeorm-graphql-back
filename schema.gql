@@ -99,7 +99,8 @@ type Mutation {
   createProduto(data: ProdutoInput!): Produto!
   createVenda(data: VendaInput!): Venda!
   createConta(data: ContaInput!): Conta!
-  createFornecedor(data: FornecedorInput!): Fornecedor!
+  createFornecedor(data: FornecedorInput!): [Fornecedor!]!
+  updateFornecedor(data: UpdateInput!): [Fornecedor!]!
   deleteFornecedor(data: DeleteInput!): [Fornecedor!]!
   createUser(data: UserInput!): User!
   createCliente(data: ClienteInput!): Cliente!
@@ -129,6 +130,14 @@ input ContaInput {
 }
 
 input FornecedorInput {
+  nome: String!
+  cnpj: String!
+  endereco: String!
+  telefone: String!
+}
+
+input UpdateInput {
+  id: Float!
   nome: String!
   cnpj: String!
   endereco: String!

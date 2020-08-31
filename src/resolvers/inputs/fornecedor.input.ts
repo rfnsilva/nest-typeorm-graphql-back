@@ -22,3 +22,23 @@ export class DeleteInput {
   readonly id: number;
 
 }
+
+@InputType()
+export class UpdateInput {
+  @Field()
+  readonly id: number;
+  
+  @Field()
+  readonly nome: string;
+
+  @Field()
+  readonly cnpj: string;
+
+  @Field()
+  readonly endereco: string;
+
+  @Field()
+  readonly telefone: string;
+
+}
+

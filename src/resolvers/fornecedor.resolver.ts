@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import RepoService from '../repositorios/repo.service';
 import Fornecedor from '../db/models/Fornecedor.entity';
-import FornecedorInput, { DeleteInput } from './inputs/fornecedor.input';
+import FornecedorInput, { DeleteInput, UpdateInput } from './inputs/fornecedor.input';
 
 @Resolver(() => Fornecedor)
 export default class FornecedorResolver {
@@ -10,7 +10,7 @@ export default class FornecedorResolver {
   //retorna todos os fornecedores
   @Query(() => [Fornecedor])
   public async getFornecedores(): Promise<Fornecedor[]> {
-    return this.repoService.fornecedorRepo.find();
+    return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
   }
 
   //retorna um fornecedor
@@ -20,10 +20,10 @@ export default class FornecedorResolver {
   }
 
   //adiciona um fornecedor
-  @Mutation(() => Fornecedor)
+  @Mutation(() => [Fornecedor])
   public async createFornecedor(
     @Args('data') input: FornecedorInput,
-  ): Promise<Fornecedor> {
+  ): Promise<Fornecedor[]> {
     let fornecedor = this.repoService.fornecedorRepo.create({
       nome: input.nome,
       cnpj: input.cnpj,
@@ -31,7 +31,21 @@ export default class FornecedorResolver {
       telefone: input.telefone
     })
 
-    return await this.repoService.fornecedorRepo.save(fornecedor);
+    await this.repoService.fornecedorRepo.save(fornecedor);
+
+    return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
+
+  }
+
+  //atualiza um fornecedor
+  @Mutation(() => [Fornecedor])
+  public async updateFornecedor(
+    @Args('data') input: UpdateInput,
+  ): Promise<Fornecedor[]> {
+    await this.repoService.fornecedorRepo.update(input.id, {...input});
+
+    return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
+
   }
 
   //deleta um fornecedor pelo id
@@ -40,9 +54,10 @@ export default class FornecedorResolver {
     @Args('data') input: DeleteInput,
   ): Promise<Fornecedor[]> {
     const fornecedor = await this.repoService.fornecedorRepo.findOne(input.id);
-
+    
     await this.repoService.fornecedorRepo.remove(fornecedor);
 
-    return this.repoService.fornecedorRepo.find();;
+    return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
+
   }
 }
