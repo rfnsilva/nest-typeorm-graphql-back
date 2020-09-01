@@ -37,8 +37,6 @@ export default class FornecedorResolver {
 
     await this.repoService.fornecedorRepo.save(fornecedor);
 
-    let aux_web_socket = await this.repoService.fornecedorRepo.find({ order: { id: 'ASC' } });
-
     pubSub.publish('fornecedorAdded', { fornecedorAdded: fornecedor });
 
     return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});

@@ -1,9 +1,13 @@
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from '@nestjs/graphql';
 import RepoService from '../repositorios/repo.service';
 import Categoria from '../db/models/Categoria.entity';
 import Fornecedor from '../db/models/Fornecedor.entity';
 import CategoriaInput, { CategoriaUpdateInput, CategoriaDeleteInput} from './inputs/categoria.input';
 import { context } from 'src/db/loaders';
+import { PubSub } from 'graphql-subscriptions';
+
+//REAL TIME
+export const pubSub = new PubSub();
 
 @Resolver(() => Categoria)
 export default class CategoriaResolver {
@@ -43,6 +47,8 @@ export default class CategoriaResolver {
 
     await this.repoService.categoriaRepo.save(categoria);
 
+    pubSub.publish('categoriaAdded', { categoriaAdded: categoria });
+
     return this.repoService.categoriaRepo.find({order: {id: 'ASC'}});
 
   }
@@ -67,6 +73,8 @@ export default class CategoriaResolver {
     
     await this.repoService.categoriaRepo.remove(categoria);
 
+    pubSub.publish('categoriaAdded', { categoriaAdded: categoria });
+
     return this.repoService.categoriaRepo.find({order: {id: 'ASC'}});
 
   }
@@ -77,5 +85,12 @@ export default class CategoriaResolver {
     @Context() { FornecedorLoader }: typeof context,
   ): Promise<Fornecedor> {
     return FornecedorLoader.load(parent.fornecedorId); // DataLoader
+  }
+
+  //SUBSCRIPTIONS
+  @Subscription(() => Categoria)
+  categoriaAdded() {
+    console.log('aqi porra')
+    return pubSub.asyncIterator('categoriaAdded');
   }
 }
