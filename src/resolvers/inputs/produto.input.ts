@@ -17,3 +17,30 @@ export default class ProdutoInput {
   @Field()
   readonly fornecedorId: number;
 }
+
+@InputType()
+export class ProdutoDeleteInput {
+  @Field()
+  readonly id: number;
+
+}
+
+@InputType()
+export class ProdutoUpdateInput {
+  @Field()
+  readonly id: number;
+  
+  @Field()
+  readonly nome: string;
+
+  @Field()
+  readonly cnpj: string;
+
+  @Field()
+  readonly endereco: string;
+
+  @Field()
+  readonly telefone: string;
+
+}
+

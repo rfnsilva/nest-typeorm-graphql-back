@@ -13,7 +13,8 @@ import RepoService from '../repositorios/repo.service';
 import ContaInput, {ContaDeleteInput, ContaUpdateInput} from './inputs/conta.input';
 import Conta from '../db/models/Conta.entity';
 
-//export const pubSub = new PubSub();
+//REAL TIME
+export const pubSub = new PubSub();
 
 @Resolver(() => Conta)
 export default class ContaResolver {
@@ -53,6 +54,8 @@ export default class ContaResolver {
 
     await this.repoService.contaRepo.save(conta);
 
+    pubSub.publish('contaAdded', { contaAdded: conta });
+
     return this.repoService.contaRepo.find({order: {id: 'ASC'}});
 
   }
@@ -73,11 +76,30 @@ export default class ContaResolver {
   public async deleteConta(
     @Args('data') input: ContaDeleteInput,
   ): Promise<Conta[]> {
-    const conta = await this.repoService.contaRepo.findOne(input.id);
-    
-    await this.repoService.contaRepo.remove(conta);
+    const result = await this.repoService.contaRepo.delete(input.id);
+
+    const conta = await this.repoService.contaRepo.find();
+
+    if (result.affected === 0) {
+      console.log('erro ao deletar')
+      throw new Error('erro ao deletar')
+    }
+
+    pubSub.publish('contaDeleteAdded', { contaDeleteAdded: conta });
 
     return this.repoService.contaRepo.find({order: {id: 'ASC'}});
+  }
 
+  //SUBSCRIPTIONS
+
+  //adicionar
+  @Subscription(() => Conta)
+  contaAdded() {
+    return pubSub.asyncIterator('contasAdded');
+  }
+  //deletar
+  @Subscription(() => [Conta])
+  contaDeleteAdded() {
+    return pubSub.asyncIterator('contaDeleteAdded');
   }
 }

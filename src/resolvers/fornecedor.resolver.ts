@@ -59,18 +59,31 @@ export default class FornecedorResolver {
   public async deleteFornecedor(
     @Args('data') input: FornecedorDeleteInput,
   ): Promise<Fornecedor[]> {
-    const fornecedor = await this.repoService.fornecedorRepo.findOne(input.id);
-    
-    await this.repoService.fornecedorRepo.remove(fornecedor);
+    const result = await this.repoService.fornecedorRepo.delete(input.id);
+
+    const fornecedor = await this.repoService.fornecedorRepo.find();
+
+    if (result.affected === 0) {
+      console.log('erro ao deletar')
+      throw new Error('erro ao deletar')
+    }
+
+    pubSub.publish('fornecedorDeleteAdded', { fornecedorDeleteAdded: fornecedor });
 
     return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
-
   }
 
   //SUBSCRIPTIONS
+
+  //adicionar
   @Subscription(() => Fornecedor)
   fornecedorAdded() {
     console.log('web_socket connection sucess !')
     return pubSub.asyncIterator('fornecedorAdded');
+  }
+  //deletar
+  @Subscription(() => [Fornecedor])
+  fornecedorDeleteAdded() {
+    return pubSub.asyncIterator('fornecedorDeleteAdded');
   }
 }

@@ -11,10 +11,13 @@ import {
 import { PubSub } from 'graphql-subscriptions';
 import RepoService from '../repositorios/repo.service';
 import Produto from '../db/models/Produto.entity';
-import ProdutoInput from './inputs/produto.input';
+import ProdutoInput, { ProdutoDeleteInput, ProdutoUpdateInput } from './inputs/produto.input';
 import Categoria from '../db/models/Categoria.entity';
 import Fornecedor from '../db/models/Fornecedor.entity';
 import { context } from 'src/db/loaders';
+
+//REAL TIME
+export const pubSub = new PubSub();
 
 //export const pubSub = new PubSub();
 
@@ -45,49 +48,55 @@ export default class ProdutoResolver {
   }
 
   //adiciona um produto
-  @Mutation(() => Produto)
+  @Mutation(() => [Produto])
   public async createProduto(
     @Args('data') input: ProdutoInput,
-  ): Promise<Produto> {
-    const produto = this.repoService.produtoRepo.create({
+  ): Promise<Produto[]> {
+    let produto = this.repoService.produtoRepo.create({
       nome: input.nome,
       descricao: input.descricao,
       valor: input.valor,
       categoriaId: input.categoriaId,
-      fornecedorId: input.fornecedorId
-    });
+      fornecedorId: input.fornecedorId,
+    })
 
-    const response = await this.repoService.produtoRepo.save(produto);
+    await this.repoService.produtoRepo.save(produto);
 
-    //pubSub.publish('produtoAdded', { produtoAdded: produto });
+    pubSub.publish('produtoAdded', { produtoAdded: produto });
 
-    return response;
+    return this.repoService.produtoRepo.find({order: {id: 'ASC'}});
+
   }
-/*
-  @Mutation(() => Message)
-  public async deleteMessage(
-    @Args('data') input: DeleteMessageInput,
-  ): Promise<Message> {
-    const message = await this.repoService.messageRepo.findOne(input.id);
 
-    if (!message || message.userId !== input.userId)
-      throw new Error(
-        'Message does not exists or you are not the message author',
-      );
+  //deleta um produto pelo id
+  @Mutation(() => [Produto])
+  public async deleteProduto(
+    @Args('data') input: ProdutoDeleteInput,
+  ): Promise<Produto[]> {
+    const result = await this.repoService.produtoRepo.delete(input.id);
 
-    const copy = { ...message };
+    const produto = await this.repoService.produtoRepo.find();
 
-    await this.repoService.messageRepo.remove(message);
+    if (result.affected === 0) {
+      console.log('erro ao deletar')
+      throw new Error('erro ao deletar')
+    }
 
-    return copy;
+    pubSub.publish('produtoDeleteAdded', { produtoDeleteAdded: produto });
+
+    return this.repoService.produtoRepo.find({order: {id: 'ASC'}});
   }
-*/
 
-  /*comunicação em real time
-  @Subscription(() => Produto)
-  produtoAdded() {
-    return pubSub.asyncIterator('produtoAdded');
-  }*/
+  //atualiza um produto
+  @Mutation(() => [Produto])
+  public async updateProduto(
+    @Args('data') input: ProdutoUpdateInput,
+  ): Promise<Produto[]> {
+    await this.repoService.produtoRepo.update(input.id, {...input});
+
+    return this.repoService.produtoRepo.find({order: {id: 'ASC'}});
+
+  }
   
   @ResolveField(() => Categoria, { name: 'categoria' })
   public async getCategoria(
@@ -103,5 +112,18 @@ export default class ProdutoResolver {
     @Context() { FornecedorLoader }: typeof context,
   ): Promise<Fornecedor> {
     return FornecedorLoader.load(parent.fornecedorId); // DataLoader
+  }
+
+  //SUBSCRIPTIONS
+
+  //adicionar
+  @Subscription(() => Produto)
+  produtoAdded() {
+    return pubSub.asyncIterator('produtoAdded');
+  }
+  //deletar
+  @Subscription(() => [Produto])
+  produtoDeleteAdded() {
+    return pubSub.asyncIterator('produtoDeleteAdded');
   }
 }
