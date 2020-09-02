@@ -69,9 +69,15 @@ export default class CategoriaResolver {
   public async deleteCategoria(
     @Args('data') input: CategoriaDeleteInput,
   ): Promise<Categoria[]> {
+
     const categoria = await this.repoService.categoriaRepo.findOne(input.id);
-    
-    await this.repoService.categoriaRepo.remove(categoria);
+
+    const result = await this.repoService.categoriaRepo.delete(input.id);
+
+    if (result.affected === 0) {
+      console.log('erro ao deletar')
+      throw new Error('erro ao deletar')
+    }
 
     pubSub.publish('categoriaAdded', { categoriaAdded: categoria });
 
@@ -90,7 +96,6 @@ export default class CategoriaResolver {
   //SUBSCRIPTIONS
   @Subscription(() => Categoria)
   categoriaAdded() {
-    console.log('aqi porra')
     return pubSub.asyncIterator('categoriaAdded');
   }
 }
