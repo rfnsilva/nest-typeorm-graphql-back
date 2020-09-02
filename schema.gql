@@ -187,5 +187,6 @@ input ClienteInput {
 
 type Subscription {
   categoriaAdded: Categoria!
+  categoriaDeleteAdded: [Categoria!]!
   fornecedorAdded: Fornecedor!
 }
