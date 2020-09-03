@@ -19,8 +19,6 @@ import { context } from 'src/db/loaders';
 //REAL TIME
 export const pubSub = new PubSub();
 
-//export const pubSub = new PubSub();
-
 @Resolver(() => Produto)
 export default class ProdutoResolver {
   constructor(private readonly repoService: RepoService) {}

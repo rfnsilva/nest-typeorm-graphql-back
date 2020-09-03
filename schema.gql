@@ -99,7 +99,9 @@ type Mutation {
   createCategoria(data: CategoriaInput!): [Categoria!]!
   updateCategoria(data: CategoriaUpdateInput!): [Categoria!]!
   deleteCategoria(data: CategoriaDeleteInput!): [Categoria!]!
-  createProduto(data: ProdutoInput!): Produto!
+  createProduto(data: ProdutoInput!): [Produto!]!
+  deleteProduto(data: ProdutoDeleteInput!): [Produto!]!
+  updateProduto(data: ProdutoUpdateInput!): [Produto!]!
   createVenda(data: VendaInput!): Venda!
   createConta(data: ContaInput!): [Conta!]!
   updateConta(data: ContaUpdateInput!): [Conta!]!
@@ -132,6 +134,18 @@ input ProdutoInput {
   valor: Float!
   categoriaId: Float!
   fornecedorId: Float!
+}
+
+input ProdutoDeleteInput {
+  id: Float!
+}
+
+input ProdutoUpdateInput {
+  id: Float!
+  nome: String!
+  cnpj: String!
+  endereco: String!
+  telefone: String!
 }
 
 input VendaInput {
@@ -188,5 +202,10 @@ input ClienteInput {
 type Subscription {
   categoriaAdded: Categoria!
   categoriaDeleteAdded: [Categoria!]!
+  produtoAdded: Produto!
+  produtoDeleteAdded: [Produto!]!
+  contaAdded: Conta!
+  contaDeleteAdded: [Conta!]!
   fornecedorAdded: Fornecedor!
+  fornecedorDeleteAdded: [Fornecedor!]!
 }

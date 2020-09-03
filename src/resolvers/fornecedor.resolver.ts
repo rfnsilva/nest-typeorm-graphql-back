@@ -37,6 +37,14 @@ export default class FornecedorResolver {
 
     await this.repoService.fornecedorRepo.save(fornecedor);
 
+    //cria conta referente ao fornecedor q esta sendo criado
+    let conta = this.repoService.contaRepo.create({
+      valor: 0,
+      fornecedorId: fornecedor.id
+    })
+
+    await this.repoService.contaRepo.save(conta);
+
     pubSub.publish('fornecedorAdded', { fornecedorAdded: fornecedor });
 
     return this.repoService.fornecedorRepo.find({order: {id: 'ASC'}});
