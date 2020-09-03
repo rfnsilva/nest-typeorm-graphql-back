@@ -31,6 +31,14 @@ export default class Produto {
   valor: number;
 
   @Field()
+  @Column()
+  estoque: number;
+
+  @Field()
+  @Column()
+  checked: boolean;
+
+  @Field()
   @Column({ name: 'categoria_id' })
   categoriaId: number;
 

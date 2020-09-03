@@ -56,6 +56,8 @@ export default class ProdutoResolver {
       valor: input.valor,
       categoriaId: input.categoriaId,
       fornecedorId: input.fornecedorId,
+      checked: input.checked,
+      estoque: input.estoque
     })
 
     await this.repoService.produtoRepo.save(produto);

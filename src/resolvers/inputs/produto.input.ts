@@ -16,6 +16,12 @@ export default class ProdutoInput {
 
   @Field()
   readonly fornecedorId: number;
+
+  @Field()
+  readonly estoque: number;
+  
+  @Field()
+  readonly checked: boolean;
 }
 
 @InputType()
@@ -41,6 +47,12 @@ export class ProdutoUpdateInput {
 
   @Field()
   readonly telefone: string;
+
+  @Field()
+  readonly estoque: number;
+  
+  @Field()
+  readonly checked: boolean;
 
 }
 

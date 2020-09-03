@@ -31,6 +31,8 @@ type Produto {
   nome: String!
   descricao: String!
   valor: Float!
+  estoque: Float!
+  checked: Boolean!
   categoriaId: Float!
   fornecedorId: Float!
   createdAt: DateTime!
@@ -98,7 +100,7 @@ type Query {
 type Mutation {
   createCategoria(data: CategoriaInput!): [Categoria!]!
   updateCategoria(data: CategoriaUpdateInput!): [Categoria!]!
-  deleteCategoria(data: CategoriaDeleteInput!): [Categoria!]!
+  deleteCategoria(data: ClienteDeleteInput!): [Cliente!]!
   createProduto(data: ProdutoInput!): [Produto!]!
   deleteProduto(data: ProdutoDeleteInput!): [Produto!]!
   updateProduto(data: ProdutoUpdateInput!): [Produto!]!
@@ -111,6 +113,7 @@ type Mutation {
   deleteFornecedor(data: FornecedorDeleteInput!): [Fornecedor!]!
   createUser(data: UserInput!): User!
   createCliente(data: ClienteInput!): [Cliente!]!
+  updateCliente(data: ClienteUpdateInput!): [Cliente!]!
 }
 
 input CategoriaInput {
@@ -124,7 +127,7 @@ input CategoriaUpdateInput {
   fornecedorId: Float!
 }
 
-input CategoriaDeleteInput {
+input ClienteDeleteInput {
   id: Float!
 }
 
@@ -134,6 +137,8 @@ input ProdutoInput {
   valor: Float!
   categoriaId: Float!
   fornecedorId: Float!
+  estoque: Float!
+  checked: Boolean!
 }
 
 input ProdutoDeleteInput {
@@ -146,6 +151,8 @@ input ProdutoUpdateInput {
   cnpj: String!
   endereco: String!
   telefone: String!
+  estoque: Float!
+  checked: Boolean!
 }
 
 input VendaInput {
@@ -199,6 +206,13 @@ input ClienteInput {
   senha: String!
 }
 
+input ClienteUpdateInput {
+  id: Float!
+  nome: String!
+  email: String!
+  senha: String!
+}
+
 type Subscription {
   categoriaAdded: Categoria!
   categoriaDeleteAdded: [Categoria!]!
@@ -208,4 +222,6 @@ type Subscription {
   contaDeleteAdded: [Conta!]!
   fornecedorAdded: Fornecedor!
   fornecedorDeleteAdded: [Fornecedor!]!
+  clienteAdded: Cliente!
+  clienteDeleteAdded: [Cliente!]!
 }
